@@ -32,7 +32,7 @@ class Person(models.Model):
     gender_identity = models.CharField(max_length=30, null=True, blank=True)
     birth_date = models.DateField(null=False)
     national_id = models.CharField(max_length=30, unique=True, null=False)
-    primary_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    primary_address_id = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     phone_number = models.CharField(max_length=15, unique=True, null=False)
     email = models.EmailField(max_length=100, unique=True, null=False)
 
@@ -80,7 +80,7 @@ class Staff(models.Model):
 
 class RewardPunish(models.Model):
     remark_id = models.BigAutoField(primary_key=True)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person_id = models.ForeignKey(Person, on_delete=models.CASCADE)
     remark_type = models.CharField(max_length=20, null=False)
     remark_value = models.CharField(max_length=200, null=False)
     updated_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)

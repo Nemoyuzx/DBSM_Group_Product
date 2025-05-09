@@ -26,8 +26,8 @@
                         <p><strong>电话:</strong> {{ person.phone_number }}</p>
                         <p><strong>电子邮箱:</strong> {{ person.email }}</p>
                         <p><strong>主要地址:</strong> 
-                            {% if person.primary_address %}
-                                {{ person.primary_address }}
+                            {% if person.primary_address_id %}
+                                {{ person.primary_address_id }}
                             {% else %}
                                 未指定
                             {% endif %}
