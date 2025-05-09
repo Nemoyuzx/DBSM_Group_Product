@@ -1,0 +1,86 @@
+{% extends 'DBMS/base.html' %}
+
+{% block title %}{{ person.legal_name }} - 人员详情{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>{{ person.legal_name }} <small class="text-muted">(ID: {{ person.person_id }})</small></h2>
+        <p>人员详细信息</p>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>基本信息</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>身份证/护照号:</strong> {{ person.national_id }}</p>
+                        <p><strong>法定姓名:</strong> {{ person.legal_name }}</p>
+                        <p><strong>常用名:</strong> {{ person.preferred_name }}</p>
+                        <p><strong>性别:</strong> {{ person.get_sex_at_birth_display }}</p>
+                        <p><strong>性别认同:</strong> {{ person.gender_identity|default:"未指定" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>出生日期:</strong> {{ person.birth_date }}</p>
+                        <p><strong>电话:</strong> {{ person.phone_number }}</p>
+                        <p><strong>电子邮箱:</strong> {{ person.email }}</p>
+                        <p><strong>主要地址:</strong> 
+                            {% if person.primary_address %}
+                                {{ person.primary_address }}
+                            {% else %}
+                                未指定
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if student %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>学生信息</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>学号:</strong> {{ student.student_id_id }}</p>
+                        <p><strong>入学年份:</strong> {{ student.admission_year }}</p>
+                        <p><strong>注册状态:</strong> {{ student.get_enrollment_status_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>预计毕业学期:</strong> {{ student.expected_grad_term }}</p>
+                        <p><strong>残障登记:</strong> {% if student.disability_flag %}是{% else %}否{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if staff %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>教职工信息</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>工号:</strong> {{ staff.staff_id_id }}</p>
+                        <p><strong>入职日期:</strong> {{ staff.hire_date }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>雇佣类型:</strong> {{ staff.get_employment_type_display }}</p>
+                        <p><strong>状态:</strong> {{ staff.get_staff_status_display }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-3">
+            <a href="{% url 'person_list' %}" class="btn btn-secondary">返回人员列表</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

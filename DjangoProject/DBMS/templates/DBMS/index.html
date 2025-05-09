@@ -1,0 +1,86 @@
+{% extends 'DBMS/base.html' %}
+
+{% block title %}首页 - 教育管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4">教育管理系统</h1>
+            <p class="lead">这是一个基于Django的数据库教育管理系统，用于管理学校的学生、教职工、课程等信息。</p>
+            <hr class="my-4">
+            <p>本系统支持人员管理、学生管理、教职工管理、课程管理、院系管理等功能。</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <h2 class="text-center mb-4">系统概况</h2>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">人员管理</h5>
+                <h1 class="display-4">{{ stats.people_count }}</h1>
+                <p class="card-text">系统中的总人数</p>
+                <a href="{% url 'person_list' %}" class="btn btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">学生管理</h5>
+                <h1 class="display-4">{{ stats.student_count }}</h1>
+                <p class="card-text">在校学生人数</p>
+                <a href="{% url 'student_list' %}" class="btn btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">教职工管理</h5>
+                <h1 class="display-4">{{ stats.staff_count }}</h1>
+                <p class="card-text">教职工人数</p>
+                <a href="{% url 'staff_list' %}" class="btn btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">课程管理</h5>
+                <h1 class="display-4">{{ stats.course_count }}</h1>
+                <p class="card-text">开设课程数量</p>
+                <a href="{% url 'course_list' %}" class="btn btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">院系管理</h5>
+                <h1 class="display-4">{{ stats.department_count }}</h1>
+                <p class="card-text">院系数量</p>
+                <a href="{% url 'department_list' %}" class="btn btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">项目管理</h5>
+                <h1 class="display-4">{{ stats.program_count }}</h1>
+                <p class="card-text">学位项目数量</p>
+                <a href="{% url 'program_list' %}" class="btn btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
