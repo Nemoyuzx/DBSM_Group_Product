@@ -54,7 +54,7 @@ class Student(models.Model):
     disability_flag = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"Student {self.student_id_id}"
+        return f"Student {self.student_id}"
 
 class Staff(models.Model):
     EMPLOYMENT_TYPE_CHOICES = [
@@ -76,7 +76,7 @@ class Staff(models.Model):
     staff_status = models.CharField(max_length=10, choices=STAFF_STATUS_CHOICES, null=False)
     
     def __str__(self):
-        return f"Staff {self.staff_id_id}"
+        return f"Staff {self.staff_id}"
 
 class RewardPunish(models.Model):
     remark_id = models.BigAutoField(primary_key=True)
@@ -87,7 +87,7 @@ class RewardPunish(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.remark_type}: {self.person}"
+        return f"{self.remark_type}: {self.person_id}"
 
 class Term(models.Model):
     term_code = models.CharField(max_length=6, primary_key=True)
@@ -118,15 +118,15 @@ class Department(models.Model):
         return self.name
 
 class InstructorRole(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, primary_key=True)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE, primary_key=True)
     academic_rank = models.ForeignKey(AcademicRank, on_delete=models.CASCADE)
-    primary_dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+    primary_dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
     primary_dept_name = models.CharField(max_length=100, null=True, blank=True)
     start_term_code = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='instructor_start_terms')
     end_term_code = models.ForeignKey(Term, on_delete=models.SET_NULL, null=True, related_name='instructor_end_terms')
     
     def __str__(self):
-        return f"{self.staff} - {self.primary_dept_name}"
+        return f"{self.staff_id} - {self.primary_dept_name}"
 
 class AdminPosition(models.Model):
     position_id = models.AutoField(primary_key=True)
@@ -141,27 +141,27 @@ class AdminPosition(models.Model):
         return self.title
 
 class AdminRole(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
-    position = models.ForeignKey(AdminPosition, on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    position_id = models.ForeignKey(AdminPosition, on_delete=models.CASCADE)
     start_term_code = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='admin_start_terms')
     end_term_code = models.ForeignKey(Term, on_delete=models.SET_NULL, null=True, related_name='admin_end_terms')
     
     class Meta:
-        unique_together = ('staff', 'position')
+        unique_together = ('staff_id', 'position_id')
     
     def __str__(self):
-        return f"{self.staff} - {self.position.title}"
+        return f"{self.staff_id} - {self.position_id.title}"
 
 class NameHistory(models.Model):
     history_id = models.BigAutoField(primary_key=True)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person_id = models.ForeignKey(Person, on_delete=models.CASCADE)
     old_name = models.CharField(max_length=100, null=False)
     new_name = models.CharField(max_length=100, null=False)
     effective_to = models.DateField(null=True, blank=True)
     changed_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
-        return f"{self.person}: {self.old_name} -> {self.new_name}"
+        return f"{self.person_id}: {self.old_name} -> {self.new_name}"
 
 class AccommodationType(models.Model):
     acc_type = models.CharField(max_length=10, primary_key=True)
@@ -172,14 +172,14 @@ class AccommodationType(models.Model):
 
 class DisabilityAccommodation(models.Model):
     acc_id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     acc_type = models.ForeignKey(AccommodationType, on_delete=models.CASCADE)
     active_from = models.DateField(null=False)
     active_to = models.DateField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.student}: {self.acc_type}"
+        return f"{self.student_id}: {self.acc_type}"
 
 # 二、学术组织层
 
@@ -225,28 +225,28 @@ class ProgramAffiliation(models.Model):
         ('co-host', 'Co-host'),
     ]
     
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
-    dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+    program_id = models.ForeignKey(Program, on_delete=models.CASCADE)
+    dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
     affiliation_type = models.CharField(max_length=10, choices=AFFILIATION_TYPE_CHOICES, null=False)
     
     class Meta:
-        unique_together = ('program', 'dept')
+        unique_together = ('program_id', 'dept_id')
     
     def __str__(self):
-        return f"{self.program} - {self.dept}: {self.affiliation_type}"
+        return f"{self.program_id} - {self.dept_id}: {self.affiliation_type}"
 
 class StudentProgram(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    program_id = models.ForeignKey(Program, on_delete=models.CASCADE)
     is_primary_major = models.BooleanField(default=True)
     start_term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='student_program_starts')
     end_term = models.ForeignKey(Term, on_delete=models.SET_NULL, null=True, related_name='student_program_ends')
     
     class Meta:
-        unique_together = ('student', 'program')
+        unique_together = ('student_id', 'program_id')
     
     def __str__(self):
-        return f"{self.student}: {self.program}"
+        return f"{self.student_id}: {self.program_id}"
 
 class Class(models.Model):
     STATUS_CHOICES = [
@@ -262,7 +262,7 @@ class Class(models.Model):
     ]
     
     class_id = models.AutoField(primary_key=True)
-    dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+    dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
     cohort_year = models.SmallIntegerField(null=False)
     class_name = models.CharField(max_length=60, null=False)
     mode = models.CharField(max_length=10, choices=MODE_CHOICES, null=False)
@@ -273,17 +273,17 @@ class Class(models.Model):
         return f"{self.class_name} ({self.cohort_year})"
 
 class StudentClass(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
     start_term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='student_class_starts')
     end_term = models.ForeignKey(Term, on_delete=models.SET_NULL, null=True, related_name='student_class_ends')
     role_in_class = models.CharField(max_length=20, null=True, blank=True)
     
     class Meta:
-        unique_together = ('student', 'class_id')
+        unique_together = ('student_id', 'class_id')
     
     def __str__(self):
-        return f"{self.student}: {self.class_id}"
+        return f"{self.student_id}: {self.class_id}"
 
 class ClassAdvisor(models.Model):
     ADVISOR_ROLE_CHOICES = [
@@ -294,7 +294,7 @@ class ClassAdvisor(models.Model):
     ]
     
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE)
     advisor_role = models.CharField(max_length=10, choices=ADVISOR_ROLE_CHOICES, null=False)
     start_term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='advisor_start_terms')
     end_term = models.ForeignKey(Term, on_delete=models.SET_NULL, null=True, related_name='advisor_end_terms')
@@ -302,10 +302,10 @@ class ClassAdvisor(models.Model):
     note = models.CharField(max_length=120, null=True, blank=True)
     
     class Meta:
-        unique_together = ('class_id', 'staff')
+        unique_together = ('class_id', 'staff_id')
     
     def __str__(self):
-        return f"{self.staff}: {self.class_id} ({self.advisor_role})"
+        return f"{self.staff_id}: {self.class_id} ({self.advisor_role})"
 
 # 三、课程体系层
 
@@ -325,7 +325,7 @@ class Course(models.Model):
     course_code = models.CharField(max_length=15, primary_key=True)
     title = models.CharField(max_length=120, null=False)
     credit_value = models.DecimalField(max_digits=3, decimal_places=1, null=False)
-    owning_dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+    owning_dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
     default_grading_scheme = models.CharField(max_length=10, choices=GRADING_SCHEME_CHOICES, null=False)
     syllabus_blob = models.TextField(null=True, blank=True)
     language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, null=False)
@@ -386,29 +386,29 @@ class TeachAssignment(models.Model):
         ('industrymentor', 'Industry Mentor'),
     ]
     
-    offering = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    offering_id = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE)
     role = models.CharField(max_length=15, choices=ROLE_CHOICES, null=False)
     pay_rate = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     
     class Meta:
-        unique_together = ('offering', 'staff')
+        unique_together = ('offering_id', 'staff_id')
     
     def __str__(self):
-        return f"{self.staff} - {self.offering} ({self.role})"
+        return f"{self.staff_id} - {self.offering_id} ({self.role})"
 
 class ClassCoursePlan(models.Model):
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
-    offering = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
+    offering_id = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
     compulsory_flag = models.BooleanField(null=False)
     planned_week = models.SmallIntegerField(null=True, blank=True)
     remark = models.CharField(max_length=120, null=True, blank=True)
     
     class Meta:
-        unique_together = ('class_id', 'offering')
+        unique_together = ('class_id', 'offering_id')
     
     def __str__(self):
-        return f"{self.class_id} - {self.offering}"
+        return f"{self.class_id} - {self.offering_id}"
 
 # 四、注册与成绩层
 
@@ -421,8 +421,8 @@ class Enrollment(models.Model):
         ('waived', 'Waived'),
     ]
     
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    offering = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    offering_id = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
     enroll_state = models.CharField(max_length=10, choices=ENROLL_STATE_CHOICES, null=False)
     enroll_date = models.DateField(null=False)
     drop_date = models.DateField(null=True, blank=True)
@@ -431,10 +431,10 @@ class Enrollment(models.Model):
     repeat_flag = models.BooleanField(default=False)
     
     class Meta:
-        unique_together = ('student', 'offering')
+        unique_together = ('student_id', 'offering_id')
     
     def __str__(self):
-        return f"{self.student} - {self.offering}"
+        return f"{self.student_id} - {self.offering_id}"
 
 class EnrollmentOverride(models.Model):
     OVERRIDE_TYPE_CHOICES = [
@@ -443,18 +443,18 @@ class EnrollmentOverride(models.Model):
     ]
     
     override_id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    offering = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    offering_id = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
     override_type = models.CharField(max_length=10, choices=OVERRIDE_TYPE_CHOICES, null=False)
     reason = models.TextField(null=False)
     approved_by = models.ForeignKey(Staff, on_delete=models.CASCADE)
     
     def __str__(self):
-        return f"{self.student} - {self.offering} ({self.override_type})"
+        return f"{self.student_id} - {self.offering_id} ({self.override_type})"
 
 class AssessmentItem(models.Model):
     item_id = models.BigAutoField(primary_key=True)
-    offering = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
+    offering_id = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
     item_name = models.CharField(max_length=60, null=False)
     weight_percent = models.DecimalField(max_digits=5, decimal_places=2, null=False, 
                                         validators=[MinValueValidator(0), MaxValueValidator(100)])
@@ -463,22 +463,22 @@ class AssessmentItem(models.Model):
     max_attempts = models.SmallIntegerField(default=1, validators=[MinValueValidator(1)])
     
     def __str__(self):
-        return f"{self.offering} - {self.item_name}"
+        return f"{self.offering_id} - {self.item_name}"
 
 class AssessmentSubmission(models.Model):
     submission_id = models.BigAutoField(primary_key=True)
-    item = models.ForeignKey(AssessmentItem, on_delete=models.CASCADE)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    item_id = models.ForeignKey(AssessmentItem, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     attempt_no = models.SmallIntegerField(validators=[MinValueValidator(1)])
     submit_time = models.DateTimeField(auto_now_add=True)
     score_raw = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     file_link = models.CharField(max_length=200, null=True, blank=True)
     
     class Meta:
-        unique_together = ('item', 'student', 'attempt_no')
+        unique_together = ('item_id', 'student_id', 'attempt_no')
     
     def __str__(self):
-        return f"{self.student} - {self.item} (Attempt {self.attempt_no})"
+        return f"{self.student_id} - {self.item_id} (Attempt {self.attempt_no})"
 
 class AssessmentFeedback(models.Model):
     FEEDBACK_TYPE_CHOICES = [
@@ -487,12 +487,12 @@ class AssessmentFeedback(models.Model):
     ]
     
     feedback_id = models.BigAutoField(primary_key=True)
-    submission = models.ForeignKey(AssessmentSubmission, on_delete=models.CASCADE)
+    submission_id = models.ForeignKey(AssessmentSubmission, on_delete=models.CASCADE)
     feedback_type = models.CharField(max_length=10, choices=FEEDBACK_TYPE_CHOICES, null=False)
     content = models.JSONField(null=False)
     
     def __str__(self):
-        return f"Feedback for {self.submission}"
+        return f"Feedback for {self.submission_id}"
 
 class GradeAppeal(models.Model):
     DECISION_CHOICES = [
@@ -502,8 +502,8 @@ class GradeAppeal(models.Model):
     ]
     
     appeal_id = models.BigAutoField(primary_key=True)
-    item = models.ForeignKey(AssessmentItem, on_delete=models.CASCADE)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    item_id = models.ForeignKey(AssessmentItem, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     appeal_date = models.DateField(auto_now_add=True)
     appeal_reason = models.TextField(null=False)
     decision = models.CharField(max_length=10, choices=DECISION_CHOICES, null=False, default='pending')
@@ -511,7 +511,7 @@ class GradeAppeal(models.Model):
     resolution_note = models.TextField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.student} - {self.item} ({self.decision})"
+        return f"{self.student_id} - {self.item_id} ({self.decision})"
 
 # 五、学籍与合规层
 
@@ -530,7 +530,7 @@ class LeaveOfAbsence(models.Model):
     ]
     
     loa_id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     start_term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='leave_start_terms')
     end_term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='leave_end_terms')
     reason_code = models.ForeignKey(LeaveReason, on_delete=models.CASCADE)
@@ -540,7 +540,7 @@ class LeaveOfAbsence(models.Model):
     description = models.CharField(max_length=60, null=False)
     
     def __str__(self):
-        return f"{self.student} - {self.start_term} to {self.end_term}"
+        return f"{self.student_id} - {self.start_term} to {self.end_term}"
 
 class ExchangeEnrollment(models.Model):
     STATUS_CHOICES = [
@@ -550,20 +550,20 @@ class ExchangeEnrollment(models.Model):
     ]
     
     exch_id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    host_inst = models.ForeignKey(Institution, on_delete=models.CASCADE)
-    host_program = models.CharField(max_length=120, null=True, blank=True)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    host_inst_id = models.ForeignKey(Institution, on_delete=models.CASCADE)
+    host_program_id = models.CharField(max_length=120, null=True, blank=True)
     host_term_code = models.ForeignKey(Term, on_delete=models.CASCADE)
     credit_load = models.DecimalField(max_digits=4, decimal_places=1, null=False)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, null=False)
     transcript_received_flag = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"{self.student} - {self.host_inst} ({self.host_term_code})"
+        return f"{self.student_id} - {self.host_inst_id} ({self.host_term_code})"
 
 class TransferredCredit(models.Model):
     tc_id = models.BigAutoField(primary_key=True)
-    exch = models.ForeignKey(ExchangeEnrollment, on_delete=models.CASCADE)
+    exch_id = models.ForeignKey(ExchangeEnrollment, on_delete=models.CASCADE)
     host_course_code = models.CharField(max_length=20, null=False)
     host_grade = models.CharField(max_length=8, null=False)
     host_credit = models.DecimalField(max_digits=4, decimal_places=1, null=False)
@@ -573,7 +573,7 @@ class TransferredCredit(models.Model):
     decision_date = models.DateField(auto_now_add=True)
     
     def __str__(self):
-        return f"{self.exch} - {self.host_course_code}"
+        return f"{self.exch_id} - {self.host_course_code}"
 
 class CourseWaiverRequest(models.Model):
     REASON_TYPE_CHOICES = [
@@ -589,7 +589,7 @@ class CourseWaiverRequest(models.Model):
     ]
     
     waiver_id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     course_code = models.ForeignKey(Course, on_delete=models.CASCADE)
     reason_type = models.CharField(max_length=20, choices=REASON_TYPE_CHOICES, null=False)
     evidence_link = models.CharField(max_length=200, null=True, blank=True)
@@ -599,7 +599,7 @@ class CourseWaiverRequest(models.Model):
     decision_date = models.DateField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.student} - {self.course_code} ({self.decision})"
+        return f"{self.student_id} - {self.course_code} ({self.decision})"
 
 class InstructorLeave(models.Model):
     LEAVE_TYPE_CHOICES = [
@@ -609,19 +609,19 @@ class InstructorLeave(models.Model):
     ]
     
     leave_id = models.BigAutoField(primary_key=True)
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE)
     leave_start_term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='instructor_leave_starts')
     leave_end_term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='instructor_leave_ends')
     leave_type = models.CharField(max_length=10, choices=LEAVE_TYPE_CHOICES, null=False)
     replacement_required_flag = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"{self.staff} - {self.leave_start_term} to {self.leave_end_term}"
+        return f"{self.staff_id} - {self.leave_start_term} to {self.leave_end_term}"
 
 class AcademicIncident(models.Model):
     incident_id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    offering = models.ForeignKey(CourseOffering, on_delete=models.SET_NULL, null=True)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    offering_id = models.ForeignKey(CourseOffering, on_delete=models.SET_NULL, null=True)
     incident_type = models.CharField(max_length=40, null=False)
     report_date = models.DateField(null=False)
     status = models.CharField(max_length=20, null=False)
@@ -629,7 +629,7 @@ class AcademicIncident(models.Model):
     recorded_by = models.ForeignKey(Staff, on_delete=models.CASCADE)
     
     def __str__(self):
-        return f"{self.student} - {self.incident_type}"
+        return f"{self.student_id} - {self.incident_type}"
 
 # 六、创新与能力层
 
@@ -643,47 +643,47 @@ class Competency(models.Model):
         return self.description
 
 class StudentCompetency(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    comp = models.ForeignKey(Competency, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    comp_id = models.ForeignKey(Competency, on_delete=models.CASCADE)
     competency_level = models.CharField(max_length=10, null=False)
     evidence_link = models.CharField(max_length=200, null=True, blank=True)
     verified_by = models.ForeignKey(Staff, on_delete=models.CASCADE)
     verify_date = models.DateField(null=False)
     
     class Meta:
-        unique_together = ('student', 'comp')
+        unique_together = ('student_id', 'comp_id')
     
     def __str__(self):
-        return f"{self.student} - {self.comp} ({self.competency_level})"
+        return f"{self.student_id} - {self.comp_id} ({self.competency_level})"
 
 class LearningEvent(models.Model):
     event_id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     offering = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
     event_type = models.CharField(max_length=30, null=False)
     timestamp = models.DateTimeField(null=False)
     metadata_json = models.JSONField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.student} - {self.offering} ({self.event_type})"
+        return f"{self.student_id} - {self.offering} ({self.event_type})"
 
 class ProjectTeam(models.Model):
     team_id = models.BigAutoField(primary_key=True)
     project_title = models.CharField(max_length=120, null=False)
-    advisor_staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    advisor_staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE)
     offering = models.ForeignKey(CourseOffering, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"{self.project_title} ({self.team_id})"
 
 class TeamMember(models.Model):
-    team = models.ForeignKey(ProjectTeam, on_delete=models.CASCADE)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    team_id = models.ForeignKey(ProjectTeam, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     role_in_team = models.CharField(max_length=20, null=True, blank=True)
     join_date = models.DateField(null=False)
     
     class Meta:
-        unique_together = ('team', 'student')
+        unique_together = ('team_id', 'student_id')
     
     def __str__(self):
-        return f"{self.student} in {self.team}"
+        return f"{self.student_id} in {self.team_id}"
