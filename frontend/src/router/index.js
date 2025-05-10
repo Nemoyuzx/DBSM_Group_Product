@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../views/Home.vue';
+import AllTables from '../views/AllTables.vue';
 
 const routes = [
   {
@@ -41,6 +42,16 @@ const routes = [
     path: '/persons/:id',
     name: 'PersonDetail',
     component: () => import('../views/PersonDetail.vue')
+  },
+  {
+    path: '/all-tables',
+    name: 'AllTables',
+    component: AllTables
+  },
+  {
+    path: '/table-data/:tableName',
+    name: 'TableDataView',
+    component: () => import('../views/TableDataView.vue')
   }
 ]
 
