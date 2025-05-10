@@ -78,6 +78,9 @@ urlpatterns = [
     # 保留API搜索接口
     path('api/persons/search/', views.api_person_search, name='api_person_search'),
     
+    # 添加数据表统计API
+    path('api/table-counts/', views.api_table_counts, name='api_table_counts'),
+    
     # 添加根路径处理，重定向到API根路径
     path('', lambda request: JsonResponse({'message': 'API服务正常运行', 'endpoints': '/api/'})),
 ]
