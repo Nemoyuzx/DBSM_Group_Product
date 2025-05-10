@@ -645,7 +645,7 @@ class Competency(models.Model):
 class StudentCompetency(models.Model):
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     comp_id = models.ForeignKey(Competency, on_delete=models.CASCADE)
-    competency_level = models.CharField(max_length=10, null=False)
+    competency_level = models.CharField(max_length=25, null=False)
     evidence_link = models.CharField(max_length=200, null=True, blank=True)
     verified_by = models.ForeignKey(Staff, on_delete=models.CASCADE)
     verify_date = models.DateField(null=False)
