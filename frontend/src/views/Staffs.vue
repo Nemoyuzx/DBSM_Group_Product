@@ -10,7 +10,7 @@
 
       <el-table v-loading="loading" :data="staffs" stripe style="width: 100%">
         <el-table-column prop="staff_id" :label="$t('id')" width="80" />
-        <el-table-column prop="legal_name" :label="$t('name')" />
+        <el-table-column prop="staff_name" :label="$t('name')" />
         <el-table-column prop="employment_type" :label="$t('employment_type')" />
         <el-table-column prop="staff_status" :label="$t('staff_status')" />
         <el-table-column prop="hire_date" :label="$t('hire_date')" />
@@ -31,7 +31,7 @@
           <el-input v-model="form.staff_id" :disabled="editMode" />
         </el-form-item>
         <el-form-item :label="$t('name')">
-          <el-input v-model="form.legal_name" />
+          <el-input v-model="form.staff_name" />
         </el-form-item>
         <el-form-item :label="$t('employment_type')">
           <el-input v-model="form.employment_type" />
@@ -65,7 +65,7 @@ export default {
       editMode: false,
       form: {
         staff_id: '',
-        legal_name: '',
+        staff_name: '',
         employment_type: '',
         staff_status: '',
         hire_date: ''
@@ -96,7 +96,7 @@ export default {
         this.editMode = false;
         this.form = {
           staff_id: '',
-          legal_name: '',
+          staff_name: '',
           employment_type: '',
           staff_status: '',
           hire_date: ''
@@ -119,7 +119,7 @@ export default {
       }
     },
     async deleteStaff(row) {
-      if (confirm(`${this.$t('confirm_delete')} ${row.legal_name}?`)) {
+      if (confirm(`${this.$t('confirm_delete')} ${row.staff_name}?`)) {
         try {
           await axios.delete(`/api/staffs/${row.staff_id}/`);
           this.fetchStaffs();

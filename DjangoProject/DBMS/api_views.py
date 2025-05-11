@@ -95,7 +95,7 @@ class StudentViewSet(BaseModelViewSet):
         return Response(serializer.data)
 
 class StaffViewSet(BaseModelViewSet):
-    queryset = Staff.objects.all().order_by('staff_id')  # 添加默认排序
+    queryset = Staff.objects.all().select_related('staff_id').order_by('staff_id')  # 添加select_related优化查询
     serializer_class = StaffSerializer
     search_fields = ['staff_id__legal_name', 'employment_type', 'staff_status']
     ordering_fields = ['hire_date', 'staff_status']
