@@ -1,14 +1,22 @@
 module.exports = {
-    devServer: {
-        port: 8082,  // 前端端口可自定义
-        proxy: {
-            '/api': {
-                target: 'http://127.0.0.1:8000',
-                changeOrigin: true,
-                pathRewrite: {
-                    '^/api': ''  // 去掉前缀 /api，使其指向 http://127.0.0.1:8000/
-                }
-            }
-        }
+  devServer: {
+    port: 8082,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000', // Django后端地址
+        changeOrigin: true
+      },
+      // 为不带/api前缀的请求也设置代理
+      '/table-counts': {
+        target: 'http://localhost:8000/api',
+        changeOrigin: true,
+        pathRewrite: {'^/': '/api/'}
+      },
+      '/table-data': {
+        target: 'http://localhost:8000/api',
+        changeOrigin: true,
+        pathRewrite: {'^/': '/api/'}
+      }
     }
+  }
 }

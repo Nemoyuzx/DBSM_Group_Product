@@ -57,7 +57,13 @@ const routes = [
   {
     path: '/table-data/:tableName',
     name: 'TableDataView',
-    component: () => import('../views/TableDataView.vue')
+    component: () => import('../views/TableDataView.vue'),
+    props: true
+  },
+  {
+    path: '/api-debug',
+    name: 'ApiDebug',
+    component: () => import('../views/ApiDebug.vue')
   }
 ]
 

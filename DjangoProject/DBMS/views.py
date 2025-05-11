@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.apps import apps
+import datetime
 from .models import (
     Person, Student, Staff, Course, Department, Program,
     CourseOffering, Address, Institution, Term, AcademicRank,
@@ -97,3 +98,65 @@ def api_table_counts(request):
         'counts': counts,
         'categorized_counts': categorized_counts
     })
+
+def api_table_data(request, table_name):
+    """根据表名获取表数据"""
+    try:
+        # 添加调试信息
+        print(f"正在尝试获取表 {table_name} 的数据")
+        
+        # 尝试不区分大小写获取模型
+        try:
+            model = apps.get_model('DBMS', table_name)
+        except LookupError:
+            # 如果找不到，尝试首字母大写，其余小写的形式
+            try:
+                model = apps.get_model('DBMS', table_name.capitalize())
+            except LookupError:
+                # 列出所有可用的模型，帮助调试
+                available_models = list(apps.app_configs['DBMS'].models.keys())
+                print(f"可用模型: {available_models}")
+                
+                # 查找名称相似的模型（不区分大小写比较）
+                similar_models = [m for m in available_models if m.lower() == table_name.lower()]
+                if similar_models:
+                    print(f"找到相似模型: {similar_models}")
+                    model = apps.get_model('DBMS', similar_models[0])
+                else:
+                    return JsonResponse({
+                        'error': f'表 {table_name} 不存在', 
+                        'available_models': available_models
+                    }, status=404)
+        
+        # 获取数据
+        data = model.objects.all()[:100]  # 限制返回数量
+        
+        # 准备返回数据
+        rows = []
+        for item in data:
+            # 将模型实例转换为字典
+            row = {}
+            for field in item._meta.fields:
+                field_name = field.name
+                field_value = getattr(item, field_name)
+                # 处理外键和日期类型
+                if field.is_relation:
+                    field_value = str(field_value)
+                elif isinstance(field_value, (datetime.date, datetime.datetime)):
+                    field_value = field_value.isoformat()
+                row[field_name] = field_value
+            rows.append(row)
+        
+        # 获取列名
+        columns = [f.name for f in model._meta.fields]
+        
+        return JsonResponse({
+            'table': table_name,
+            'columns': columns,
+            'rows': rows
+        })
+    except Exception as e:
+        import traceback
+        print(f"获取表数据时发生错误: {e}")
+        print(traceback.format_exc())
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)

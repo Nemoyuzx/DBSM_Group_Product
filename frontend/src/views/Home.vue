@@ -37,7 +37,7 @@
                       v-for="(count, model) in models"
                       :key="model"
                   >
-                    <el-card shadow="hover" class="stat-card">
+                    <el-card shadow="hover" class="stat-card" @click="viewTableData(model)">
                       <div class="stat-name">{{ model }}</div>
                       <div class="stat-count">{{ count }}</div>
                     </el-card>
@@ -113,18 +113,40 @@ export default {
       this.loading = true
       this.error = null
       try {
+        // 确保请求使用/api前缀
         const response = await axios.get('/api/table-counts/')
+        console.log('获取到的表计数:', response.data)
         this.counts = response.data.counts
         this.categorizedCounts = response.data.categorized_counts
       } catch (err) {
         console.error('获取数据统计失败:', err)
         this.error = this.$t('fetch_error')
+        
+        // 如果请求失败，尝试不带/api/前缀的请求
+        try {
+          const fallbackResponse = await axios.get('/table-counts/')
+          console.log('通过备用路径获取表计数:', fallbackResponse.data)
+          this.counts = fallbackResponse.data.counts
+          this.categorizedCounts = fallbackResponse.data.categorized_counts
+        } catch (fallbackErr) {
+          console.error('备用请求也失败:', fallbackErr)
+        }
       } finally {
         this.loading = false
       }
     },
     refreshStats() {
       this.fetchTableCounts()
+    },
+    viewTableData(tableName) {
+      // 添加调试日志
+      console.log(`正在跳转到表 ${tableName} 的数据视图`);
+      
+      // 确保使用正确的路由路径
+      this.$router.push({
+        name: 'TableDataView',
+        params: { tableName }
+      });
     }
   }
 }
@@ -167,6 +189,7 @@ export default {
   text-align: center;
   margin-bottom: 15px;
   transition: all 0.3s;
+  cursor: pointer;  /* 添加鼠标指针样式 */
 }
 .stat-card:hover {
   transform: translateY(-5px);

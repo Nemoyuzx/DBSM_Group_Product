@@ -19,9 +19,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from DBMS import views
 from DBMS import api_views
+from django.apps import apps
 
 # 创建API路由器
 router = DefaultRouter()
@@ -80,6 +83,39 @@ urlpatterns = [
     
     # 添加数据表统计API
     path('api/table-counts/', views.api_table_counts, name='api_table_counts'),
+    
+    # 添加获取表数据API
+    path('api/table-data/<str:table_name>/', views.api_table_data, name='api_table_data'),
+    
+    # 添加API调试和测试端点
+    path('api/available-models/', lambda request: JsonResponse({
+        'available_models': list(apps.app_configs['DBMS'].models.keys()),
+        'note': '可用于检查模型名称大小写'
+    })),
+    
+    # 添加非/api/前缀的兼容路由
+    path('table-counts/', views.api_table_counts, name='api_table_counts_no_prefix'),
+    path('table-data/<str:table_name>/', views.api_table_data, name='api_table_data_no_prefix'),
+    path('available-models/', lambda request: JsonResponse({
+        'available_models': list(apps.app_configs['DBMS'].models.keys()),
+        'note': '可用于检查模型名称大小写'
+    })),
+    
+    # 添加一个更明确的调试信息端点
+    path('api/debug-info/', lambda request: JsonResponse({
+        'api_endpoints': [
+            '/api/table-counts/',
+            '/api/table-data/<table_name>/',
+            '/api/persons/search/'
+        ],
+        'available_tables': list(apps.app_configs['DBMS'].models.keys())
+    })),
+    
+    # 添加一个通用的处理程序用于重定向404页面
+    path('<path:invalid_path>', lambda request, invalid_path: JsonResponse({
+        'error': f'找不到路径: {invalid_path}', 
+        'suggestion': '请尝试添加/api/前缀或检查URL是否正确'
+    }, status=404)),
     
     # 添加根路径处理，重定向到API根路径
     path('', lambda request: JsonResponse({'message': 'API服务正常运行', 'endpoints': '/api/'})),
