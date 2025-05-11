@@ -95,20 +95,20 @@ class StudentViewSet(BaseModelViewSet):
         return Response(serializer.data)
 
 class StaffViewSet(BaseModelViewSet):
-    queryset = Staff.objects.all()
+    queryset = Staff.objects.all().order_by('staff_id')  # 添加默认排序
     serializer_class = StaffSerializer
     search_fields = ['staff_id__legal_name', 'employment_type', 'staff_status']
     ordering_fields = ['hire_date', 'staff_status']
 
 # 学术组织层视图集
 class DepartmentViewSet(BaseModelViewSet):
-    queryset = Department.objects.all()
+    queryset = Department.objects.all().order_by('dept_id')  # 添加默认排序
     serializer_class = DepartmentSerializer
     search_fields = ['name', 'office_location']
     ordering_fields = ['name']
 
 class ProgramViewSet(BaseModelViewSet):
-    queryset = Program.objects.all()
+    queryset = Program.objects.all().order_by('program_id')  # 添加默认排序
     serializer_class = ProgramSerializer
     search_fields = ['name', 'degree_type']
     ordering_fields = ['name', 'degree_type']
@@ -164,7 +164,7 @@ class DisabilityAccommodationViewSet(BaseModelViewSet):
 
 # 课程体系层视图集
 class CourseViewSet(BaseModelViewSet):
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().order_by('course_code')  # 添加默认排序
     serializer_class = CourseSerializer
     search_fields = ['course_code', 'title']
     ordering_fields = ['title', 'credit_value']

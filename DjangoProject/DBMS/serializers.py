@@ -1,3 +1,4 @@
+from decimal import Decimal
 from rest_framework import serializers
 from .models import (
     Person, Student, Staff, Course, Department, Program,
@@ -51,6 +52,12 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
+        
+    def validate_credit_value(self, value):
+        # 确保使用 Decimal 类型进行验证
+        if value < Decimal('0.0'):
+            raise serializers.ValidationError("学分值不能为负数")
+        return value
 
 class CourseOfferingSerializer(serializers.ModelSerializer):
     course_title = serializers.CharField(source='course_code.title', read_only=True)
