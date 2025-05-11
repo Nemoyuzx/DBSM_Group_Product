@@ -3,30 +3,40 @@
     <el-row :gutter="20">
       <el-col :span="24">
         <el-card class="welcome-card">
-          <h1>欢迎使用DBMS系统</h1>
-          <p>这是一个用于管理学校数据的数据库管理系统</p>
+          <h1>{{ $t('welcome') }}</h1>
+          <p>{{ $t('description') }}</p>
+          <div class="contact">
+            Group19 · Rui ❤️‍🔥：<a href="mailto:jp2023213616@qmul.ac.uk">jp2023213616@qmul.ac.uk</a>
+          </div>
         </el-card>
       </el-col>
     </el-row>
-    
+
     <!-- 数据统计卡片 -->
     <el-row :gutter="20" class="mt-20">
       <el-col :span="24">
         <el-card class="data-stats-card">
           <template #header>
             <div class="card-header">
-              <span>数据统计概览</span>
-              <el-button class="button" text @click="refreshStats">刷新</el-button>
+              <span>{{ $t('stats') }}</span>
+              <el-button class="button" text @click="refreshStats">{{ $t('refresh') }}</el-button>
             </div>
           </template>
           <div v-loading="loading">
             <div v-if="error" class="error-message">{{ error }}</div>
             <div v-else>
               <!-- 分类统计 -->
-              <div v-for="(models, category) in categorizedCounts" :key="category" class="category-section">
-                <h3>{{ category }}</h3>
+              <div v-for="(models, categoryKey) in categorizedCounts" :key="categoryKey" class="category-section">
+                <h3>{{ $t(`category_${categoryKey}`) }}</h3>
                 <el-row :gutter="10">
-                  <el-col :xs="12" :sm="8" :md="6" :lg="4" v-for="(count, model) in models" :key="model">
+                  <el-col
+                      :xs="12"
+                      :sm="8"
+                      :md="6"
+                      :lg="4"
+                      v-for="(count, model) in models"
+                      :key="model"
+                  >
                     <el-card shadow="hover" class="stat-card">
                       <div class="stat-name">{{ model }}</div>
                       <div class="stat-count">{{ count }}</div>
@@ -39,42 +49,46 @@
         </el-card>
       </el-col>
     </el-row>
-    
+
+    <!-- 快捷导航卡片 -->
     <el-row :gutter="20" class="mt-20">
       <el-col :span="8">
         <el-card>
           <template #header>
             <div class="card-header">
-              <span>院系管理</span>
-              <el-button class="button" text @click="$router.push('/departments')">查看</el-button>
+              <span>{{ $t('departments') }}</span>
+              <el-button class="button" text @click="$router.push('/departments')">{{ $t('view') }}</el-button>
             </div>
           </template>
-          <div>管理学校的院系信息</div>
+          <div>{{ $t('dept_desc') }}</div>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card>
           <template #header>
             <div class="card-header">
-              <span>专业管理</span>
-              <el-button class="button" text @click="$router.push('/programs')">查看</el-button>
+              <span>{{ $t('programs') }}</span>
+              <el-button class="button" text @click="$router.push('/programs')">{{ $t('view') }}</el-button>
             </div>
           </template>
-          <div>管理学校的专业信息</div>
+          <div>{{ $t('prog_desc') }}</div>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card>
           <template #header>
             <div class="card-header">
-              <span>课程管理</span>
-              <el-button class="button" text @click="$router.push('/courses')">查看</el-button>
+              <span>{{ $t('courses') }}</span>
+              <el-button class="button" text @click="$router.push('/courses')">{{ $t('view') }}</el-button>
             </div>
           </template>
-          <div>管理学校的课程信息</div>
+          <div>{{ $t('course_desc') }}</div>
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 页脚 -->
+    <p class="footer">{{ $t('copyright') }}</p>
   </div>
 </template>
 
@@ -82,7 +96,7 @@
 import axios from 'axios'
 
 export default {
-  name: 'Home',
+  name: 'HomeView',
   data() {
     return {
       counts: {},
@@ -99,12 +113,12 @@ export default {
       this.loading = true
       this.error = null
       try {
-        const response = await axios.get('table-counts/')
+        const response = await axios.get('/api/table-counts/')
         this.counts = response.data.counts
         this.categorizedCounts = response.data.categorized_counts
       } catch (err) {
         console.error('获取数据统计失败:', err)
-        this.error = '获取数据统计失败，请稍后重试'
+        this.error = this.$t('fetch_error')
       } finally {
         this.loading = false
       }
@@ -123,6 +137,11 @@ export default {
 .welcome-card {
   margin-bottom: 20px;
   text-align: center;
+}
+.contact {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #666;
 }
 .mt-20 {
   margin-top: 20px;
@@ -167,5 +186,10 @@ export default {
   color: #F56C6C;
   text-align: center;
   padding: 20px;
+}
+.footer {
+  margin-top: 40px;
+  text-align: center;
+  color: #909399;
 }
 </style>

@@ -15,6 +15,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default {
   name: 'AllTables',
@@ -22,25 +23,17 @@ export default {
     const tables = ref([]);
     const router = useRouter();
 
-    // 模拟从API获取表名列表
     const fetchTables = async () => {
-      // 在实际应用中，这里会调用后端API
-      // 例如: const response = await fetch('/api/tables');
-      // const data = await response.json();
-      // tables.value = data;
-      // 此处为模拟数据
-      tables.value = [
-        { name: 'Departments' },
-        { name: 'Programs' },
-        { name: 'Courses' },
-        { name: 'Students' },
-        { name: 'Staffs' },
-        // 根据实际后端API返回的表名进行填充
-      ];
+      try {
+        const response = await axios.get('/api/table-counts/');
+        const rawData = response.data;
+        tables.value = Object.keys(rawData).map(key => ({ name: key }));
+      } catch (error) {
+        console.error('Failed to fetch table list:', error);
+      }
     };
 
     const viewTableData = (tableName) => {
-      // 跳转到通用的表数据展示页，并传递表名参数
       router.push({ name: 'TableDataView', params: { tableName } });
     };
 
