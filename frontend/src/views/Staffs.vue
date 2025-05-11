@@ -9,7 +9,7 @@
       </template>
 
       <el-table v-loading="loading" :data="staffs" stripe style="width: 100%">
-        <el-table-column prop="staff_id" :label="$t('id')" width="80" />
+        <el-table-column prop="staff_id" :label="$t('id')" width="150" />
         <el-table-column prop="staff_name" :label="$t('name')" />
         <el-table-column prop="employment_type" :label="$t('employment_type')" />
         <el-table-column prop="staff_status" :label="$t('staff_status')" />

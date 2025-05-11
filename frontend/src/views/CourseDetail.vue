@@ -10,7 +10,7 @@
 
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="$t('id')">{{ course.course_code }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('name')">{{ course.title }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('course_name')">{{ course.title }}</el-descriptions-item>
         <el-descriptions-item :label="$t('credit')">{{ course.credit_value }}</el-descriptions-item>
         <el-descriptions-item :label="$t('language')">{{ formatLanguage(course.language) }}</el-descriptions-item>
         <el-descriptions-item :label="$t('grading')">{{ formatGrading(course.default_grading_scheme) }}</el-descriptions-item>

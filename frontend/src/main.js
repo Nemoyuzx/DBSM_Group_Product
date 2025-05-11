@@ -8,7 +8,7 @@ import axios from 'axios'
 import i18n from './i18n'
 
 // 设置 axios
-axios.defaults.baseURL = '/api'
+axios.defaults.baseURL = ''
 
 const app = createApp(App)
 app.config.globalProperties.$axios = axios

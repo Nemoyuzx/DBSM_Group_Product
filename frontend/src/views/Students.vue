@@ -18,7 +18,7 @@
           stripe
           @row-click="goToDetail"
       >
-        <el-table-column prop="student_id" label="ID" width="80" />
+        <el-table-column prop="student_id" label="ID" width="150" />
         <el-table-column prop="student_name" :label="$t('name')" />
         <el-table-column prop="enrollment_status" :label="$t('status')" />
         <el-table-column prop="admission_year" :label="$t('admission')" />

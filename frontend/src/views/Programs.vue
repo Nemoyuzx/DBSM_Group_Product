@@ -10,7 +10,7 @@
 
       <el-table :data="programs" style="width: 100%" v-loading="loading" stripe>
         <el-table-column prop="program_id" :label="$t('id')" width="100" />
-        <el-table-column prop="name" :label="$t('name')" />
+        <el-table-column prop="name" :label="$t('program_name')" />
         <el-table-column prop="degree_type" label="Degree" />
         <el-table-column fixed="right" :label="$t('actions')" width="120">
           <template #default="scope">

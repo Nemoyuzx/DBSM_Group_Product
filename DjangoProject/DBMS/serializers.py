@@ -25,14 +25,16 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class StudentSerializer(serializers.ModelSerializer):
-    student_name = serializers.CharField(source='student_id.legal_name', read_only=True)
+    # 修改source路径，使用person_id而不是student_id
+    student_name = serializers.CharField(source='person_id.legal_name', read_only=True)
     
     class Meta:
         model = Student
         fields = '__all__'
 
 class StaffSerializer(serializers.ModelSerializer):
-    staff_name = serializers.CharField(source='staff_id.legal_name', read_only=True)
+    # 修改source路径，使用person_id而不是staff_id
+    staff_name = serializers.CharField(source='person_id.legal_name', read_only=True)
     
     class Meta:
         model = Staff

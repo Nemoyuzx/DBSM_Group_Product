@@ -20,7 +20,7 @@ export default {
     status: '状态',
     admission: '入学年份',
     actions: '操作',
-    add: '添加学生',
+    add: '添加',
     edit: '编辑',
     delete: '删除',
     confirm_delete: '确认删除',
@@ -79,5 +79,9 @@ export default {
 
     // 页脚版权
     footer: '© 2025 DBMS系统 - 数据库管理系统',
-    copyright: '© 2025 DBMS系统 - 数据库管理系统'
+    copyright: '© 2025 DBMS系统 - 数据库管理系统',
+
+    course_name: '课程名称',
+    department_name: '院系名称',
+    program_name: '项目名称',
 }

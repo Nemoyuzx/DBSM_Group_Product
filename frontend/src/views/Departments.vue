@@ -15,8 +15,8 @@
           style="width: 100%"
           stripe
       >
-        <el-table-column prop="dept_id" :label="$t('id')" width="80" />
-        <el-table-column prop="name" :label="$t('name')" />
+        <el-table-column prop="dept_id" :label="$t('id')" width="150" />
+        <el-table-column prop="name" :label="$t('department_name')" />
         <el-table-column prop="office_location" label="Location" />
         <el-table-column fixed="right" :label="$t('actions')" width="120">
           <template #default="scope">

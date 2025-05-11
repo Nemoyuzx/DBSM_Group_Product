@@ -16,7 +16,7 @@
           @row-dblclick="openEditDialog"
       >
         <el-table-column prop="course_code" :label="$t('id')" width="120" />
-        <el-table-column prop="title" :label="$t('name')" />
+        <el-table-column prop="title" :label="$t('course_name')" />
         <el-table-column prop="credit_value" :label="$t('credit')" width="100" />
         <el-table-column prop="language" :label="$t('language')" width="100" />
         <el-table-column fixed="right" :label="$t('actions')" width="120">
@@ -35,7 +35,7 @@
         <el-form-item :label="$t('id')">
           <el-input v-model="form.course_code" :disabled="editMode" />
         </el-form-item>
-        <el-form-item :label="$t('name')">
+        <el-form-item :label="$t('course_name')">
           <el-input v-model="form.title" />
         </el-form-item>
         <el-form-item :label="$t('credit')">

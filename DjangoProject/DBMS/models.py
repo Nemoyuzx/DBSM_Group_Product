@@ -25,7 +25,7 @@ class Person(models.Model):
         ('U', 'Undefined'),
     ]
     
-    person_id = models.AutoField(primary_key=True)
+    person_id = models.CharField(max_length=20, primary_key=True, null=False)
     legal_name = models.CharField(max_length=100, null=False)
     preferred_name = models.CharField(max_length=100, null=False)
     sex_at_birth = models.CharField(max_length=1, choices=GENDER_CHOICES, null=False)
@@ -47,11 +47,12 @@ class Student(models.Model):
         ('dismissed', 'Dismissed'),
     ]
     
-    student_id = models.OneToOneField(Person, primary_key=True, on_delete=models.CASCADE)
+    student_id = models.CharField(max_length=15, primary_key=True, null=False)
     admission_year = models.SmallIntegerField(null=False)
     enrollment_status = models.CharField(max_length=10, choices=ENROLLMENT_STATUS_CHOICES, null=False)
     expected_grad_term = models.CharField(max_length=6, null=False)
     disability_flag = models.BooleanField(default=False)
+    person_id = models.OneToOneField(Person, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"Student {self.student_id}"
@@ -70,10 +71,11 @@ class Staff(models.Model):
         ('retired', 'Retired'),
     ]
     
-    staff_id = models.OneToOneField(Person, primary_key=True, on_delete=models.CASCADE)
+    staff_id = models.CharField(max_length=15, primary_key=True, null=False)
     hire_date = models.DateField(null=False)
     employment_type = models.CharField(max_length=10, choices=EMPLOYMENT_TYPE_CHOICES, null=False)
     staff_status = models.CharField(max_length=10, choices=STAFF_STATUS_CHOICES, null=False)
+    person_id = models.OneToOneField(Person, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"Staff {self.staff_id}"
@@ -118,7 +120,7 @@ class Department(models.Model):
         return self.name
 
 class InstructorRole(models.Model):
-    staff_id = models.ForeignKey(Staff, on_delete=models.CASCADE, primary_key=True)
+    staff_id = models.OneToOneField(Staff, on_delete=models.CASCADE, primary_key=True)
     academic_rank = models.ForeignKey(AcademicRank, on_delete=models.CASCADE)
     primary_dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
     primary_dept_name = models.CharField(max_length=100, null=True, blank=True)
@@ -193,7 +195,7 @@ class Institution(models.Model):
     
     inst_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=120, null=False)
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES, null=False)
+    type = models.CharField(max_length=15, choices=TYPE_CHOICES, null=False)
     accreditation_level = models.CharField(max_length=30, null=True, blank=True)
     
     def __str__(self):
@@ -261,7 +263,7 @@ class Class(models.Model):
         ('mixed', 'Mixed'),
     ]
     
-    class_id = models.AutoField(primary_key=True)
+    class_id = models.CharField(max_length=15, primary_key=True, null=False)
     dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
     cohort_year = models.SmallIntegerField(null=False)
     class_name = models.CharField(max_length=60, null=False)
@@ -516,7 +518,7 @@ class GradeAppeal(models.Model):
 # 五、学籍与合规层
 
 class LeaveReason(models.Model):
-    reason_code = models.CharField(max_length=10, primary_key=True)
+    reason_code = models.CharField(max_length=15, primary_key=True)
     description = models.CharField(max_length=100, null=False)
     
     def __str__(self):

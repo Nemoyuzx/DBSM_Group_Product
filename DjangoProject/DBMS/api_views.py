@@ -77,9 +77,10 @@ class PersonViewSet(BaseModelViewSet):
         return Response(data)
 
 class StudentViewSet(BaseModelViewSet):
-    queryset = Student.objects.all()
+    # 添加select_related确保加载关联的person_id
+    queryset = Student.objects.all().select_related('person_id')
     serializer_class = StudentSerializer
-    search_fields = ['student_id__legal_name', 'enrollment_status']
+    search_fields = ['person_id__legal_name', 'enrollment_status']
     ordering_fields = ['admission_year', 'enrollment_status']
     
     def list(self, request, *args, **kwargs):
@@ -95,9 +96,10 @@ class StudentViewSet(BaseModelViewSet):
         return Response(serializer.data)
 
 class StaffViewSet(BaseModelViewSet):
-    queryset = Staff.objects.all().select_related('staff_id').order_by('staff_id')  # 添加select_related优化查询
+    # 修改select_related确保加载关联的person_id
+    queryset = Staff.objects.all().select_related('person_id').order_by('staff_id')
     serializer_class = StaffSerializer
-    search_fields = ['staff_id__legal_name', 'employment_type', 'staff_status']
+    search_fields = ['person_id__legal_name', 'employment_type', 'staff_status']
     ordering_fields = ['hire_date', 'staff_status']
 
 # 学术组织层视图集

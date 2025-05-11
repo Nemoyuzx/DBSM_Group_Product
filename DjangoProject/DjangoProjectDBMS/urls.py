@@ -81,19 +81,15 @@ urlpatterns = [
     # 保留API搜索接口
     path('api/persons/search/', views.api_person_search, name='api_person_search'),
     
-    # 添加数据表统计API
+    # 修复：将API路由放到前面，确保它们先被匹配
     path('api/table-counts/', views.api_table_counts, name='api_table_counts'),
-    
-    # 添加获取表数据API
     path('api/table-data/<str:table_name>/', views.api_table_data, name='api_table_data'),
-    
-    # 添加API调试和测试端点
     path('api/available-models/', lambda request: JsonResponse({
         'available_models': list(apps.app_configs['DBMS'].models.keys()),
         'note': '可用于检查模型名称大小写'
     })),
     
-    # 添加非/api/前缀的兼容路由
+    # 非API前缀的路由
     path('table-counts/', views.api_table_counts, name='api_table_counts_no_prefix'),
     path('table-data/<str:table_name>/', views.api_table_data, name='api_table_data_no_prefix'),
     path('available-models/', lambda request: JsonResponse({
@@ -101,7 +97,7 @@ urlpatterns = [
         'note': '可用于检查模型名称大小写'
     })),
     
-    # 添加一个更明确的调试信息端点
+    # 添加API调试和测试端点
     path('api/debug-info/', lambda request: JsonResponse({
         'api_endpoints': [
             '/api/table-counts/',
