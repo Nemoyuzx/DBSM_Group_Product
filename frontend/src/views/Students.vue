@@ -51,8 +51,10 @@
         </el-form-item>
         <el-form-item label="Status">
           <el-select v-model="form.enrollment_status" placeholder="Select">
-            <el-option label="active" value="active" />
-            <el-option label="inactive" value="inactive" />
+            <el-option label="Active" value="active" />
+            <el-option label="Leave" value="leave" />
+            <el-option label="Graduate" value="graduate" />
+            <el-option label="Dismissed" value="dismissed" />
           </el-select>
         </el-form-item>
         <!-- 新增 Expected Grad Term -->
