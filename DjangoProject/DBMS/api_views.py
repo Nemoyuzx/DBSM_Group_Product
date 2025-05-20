@@ -94,6 +94,38 @@ class StudentViewSet(BaseModelViewSet):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def partial_update(self, request, *args, **kwargs):
+        # 手动更新 student 和关联的 person
+        student = self.get_object()
+        data = request.data
+        # 更新 Student 字段
+        admission_year = data.get('admission_year')
+        enrollment_status = data.get('enrollment_status')
+        if admission_year is not None:
+            student.admission_year = admission_year
+        if enrollment_status is not None:
+            student.enrollment_status = enrollment_status
+        student.save()
+        # 更新关联 Person 的姓名
+        new_name = data.get('student_name')
+        if new_name:
+            person = student.person_id
+            person.legal_name = new_name
+            person.save()
+        serializer = self.get_serializer(student)
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        # 优先保存 Student 自身字段
+        instance = serializer.save()
+        # 如前端提交 student_name 字段，则更新 Person 模型的 legal_name
+        new_name = self.request.data.get('student_name')
+        if new_name:
+            person = instance.person_id
+            person.legal_name = new_name
+            person.save()
+        return instance
 
 class StaffViewSet(BaseModelViewSet):
     # 修改select_related确保加载关联的person_id

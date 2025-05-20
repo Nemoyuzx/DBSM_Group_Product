@@ -12,6 +12,8 @@ from .models import (
     CourseWaiverRequest, InstructorLeave, AcademicIncident, Competency,
     StudentCompetency, LearningEvent, ProjectTeam, TeamMember
 )
+from .models import Person  # ...existing imports...
+import datetime
 
 # 基础序列化器
 class AddressSerializer(serializers.ModelSerializer):
@@ -25,12 +27,53 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class StudentSerializer(serializers.ModelSerializer):
-    # 修改source路径，使用person_id而不是student_id
-    student_name = serializers.CharField(source='person_id.legal_name', read_only=True)
-    
+    # 前端无需提交 person_id，自动创建关联 Person
+    student_name = serializers.CharField(source='person_id.legal_name', required=False)
     class Meta:
         model = Student
         fields = '__all__'
+        extra_kwargs = {
+            'person_id': {'read_only': True}
+        }
+    
+    def update(self, instance, validated_data):
+        # 弹出前端提交的 student_name 字段
+        new_name = validated_data.pop('student_name', None)
+        # 更新 Student 自身字段
+        instance = super().update(instance, validated_data)
+        # 如提供新的 姓名，则更新关联的 Person 模型
+        if new_name is not None:
+            person = instance.person_id
+            person.legal_name = new_name
+            person.save()
+        return instance
+
+    def create(self, validated_data):
+        # 提取嵌套的 person_id 数据，获取新提交的 legal_name
+        person_data = validated_data.pop('person_id', {}) or {}
+        new_name = person_data.get('legal_name')
+        # 设置 Student 必填字段默认值
+        validated_data.setdefault('expected_grad_term', '')
+        validated_data.setdefault('disability_flag', False)
+        # 从 validated_data 获取 student_id
+        student_id = validated_data.get('student_id')
+        # 获取或创建 Person，避免重复主键错误
+        defaults = {
+            'legal_name': new_name or student_id,
+            'preferred_name': new_name or student_id,
+            'sex_at_birth': 'U',
+            'birth_date': datetime.date.today(),
+            'national_id': student_id,
+            'phone_number': student_id,
+            'email': f"{student_id}@example.com"
+        }
+        person, created = Person.objects.get_or_create(person_id=student_id, defaults=defaults)
+        if not created and new_name:
+            person.legal_name = new_name
+            person.save()
+        # 创建 Student 并关联 Person
+        student = Student.objects.create(person_id=person, **validated_data)
+        return student
 
 class StaffSerializer(serializers.ModelSerializer):
     # 修改source路径，使用person_id而不是staff_id

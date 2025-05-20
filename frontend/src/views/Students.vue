@@ -39,6 +39,10 @@
     <!-- 添加/编辑弹窗 -->
     <el-dialog :title="editingStudent ? 'Edit Student' : 'Add Student'" v-model="dialogVisible" width="500px">
       <el-form :model="form" label-width="120px">
+        <!-- 新增 Student ID，编辑时禁用 -->
+        <el-form-item label="ID">
+          <el-input v-model="form.student_id" :disabled="editingStudent" />
+        </el-form-item>
         <el-form-item label="Student Name">
           <el-input v-model="form.student_name" />
         </el-form-item>
@@ -50,6 +54,14 @@
             <el-option label="active" value="active" />
             <el-option label="inactive" value="inactive" />
           </el-select>
+        </el-form-item>
+        <!-- 新增 Expected Grad Term -->
+        <el-form-item label="Grad Term">
+          <el-input v-model="form.expected_grad_term" />
+        </el-form-item>
+        <!-- 新增 Disability Flag -->
+        <el-form-item label="Disability">
+          <el-switch v-model="form.disability_flag" active-text="Yes" inactive-text="No" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -74,9 +86,12 @@ export default {
       dialogVisible: false,
       editingStudent: null,
       form: {
+        student_id: '',
         student_name: '',
         admission_year: '',
-        enrollment_status: ''
+        enrollment_status: '',
+        expected_grad_term: '',
+        disability_flag: false
       }
     }
   },
@@ -113,21 +128,31 @@ export default {
       if (student) {
         this.form = { ...student }
       } else {
-        this.form = { student_name: '', admission_year: '', enrollment_status: '' }
+        this.form = {
+          student_id: '',
+          student_name: '',
+          admission_year: '',
+          enrollment_status: '',
+          expected_grad_term: '',
+          disability_flag: false
+        }
       }
       this.dialogVisible = true
     },
     async submitForm() {
       try {
         if (this.editingStudent) {
-          await axios.put(`/api/students/${this.editingStudent.student_id}/`, this.form)
+          await axios.patch(`/api/students/${this.editingStudent.student_id}/`, this.form)
         } else {
-          await axios.post('/api/students/', this.form)
+          // 将 student_name 嵌套为 person_id.legal_name
+          const payload = { ...this.form, person_id: { legal_name: this.form.student_name } }
+          await axios.post('/api/students/', payload)
         }
         this.dialogVisible = false
         this.fetchStudents()
       } catch (err) {
         console.error('Submit failed', err)
+        this.error = err.response && err.response.data ? JSON.stringify(err.response.data) : 'Submit failed'
       }
     },
     async deleteStudent(student) {
