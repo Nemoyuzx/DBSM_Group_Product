@@ -1,6 +1,6 @@
 <!-- src/views/StudentDetail.vue -->
 <template>
-  <div class="student-detail">
+  <div class="student-detail" shadow="hover">
     <el-card v-if="student" class="box-card">
       <template #header>
         <div class="card-header">
@@ -17,6 +17,15 @@
         <el-descriptions-item :label="$t('disability')">
           {{ student.disability_flag ? $t('yes') : $t('no') }}
         </el-descriptions-item>
+      </el-descriptions>
+
+      <!-- 关联的 Person 信息展示 -->
+      <el-descriptions :title="$t('person_info')" column="2" border class="mt-20">
+        <el-descriptions-item :label="$t('person_id')">{{ student.person_id }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('preferred_name')">{{ student.person.preferred_name }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('birth_date')">{{ student.person.birth_date }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('email')">{{ student.person.email }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('phone')">{{ student.person.phone_number }}</el-descriptions-item>
       </el-descriptions>
 
       <!-- GPA 趋势分析（模拟数据） -->
@@ -73,6 +82,9 @@ onMounted(async () => {
 }
 .mt-30 {
   margin-top: 30px;
+}
+.mt-20 {
+  margin-top: 20px;
 }
 .card-header {
   display: flex;

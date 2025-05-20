@@ -27,6 +27,8 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class StudentSerializer(serializers.ModelSerializer):
+    # 嵌套 PersonSerializer，展示关联的 Person 信息
+    person = PersonSerializer(source='person_id', read_only=True)
     # 前端无需提交 person_id，自动创建关联 Person
     student_name = serializers.CharField(source='person_id.legal_name', required=False)
     class Meta:
