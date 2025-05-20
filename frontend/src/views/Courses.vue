@@ -19,9 +19,10 @@
         <el-table-column prop="title" :label="$t('course_name')" />
         <el-table-column prop="credit_value" :label="$t('credit')" width="100" />
         <el-table-column prop="language" :label="$t('language')" width="100" />
-        <el-table-column fixed="right" :label="$t('actions')" width="120">
+        <el-table-column fixed="right" :label="$t('actions')" width="240">
           <template #default="scope">
             <el-button size="small" @click="openEditDialog(scope.row)">{{ $t('edit') }}</el-button>
+            <el-button size="small" type="danger" @click.stop="deleteCourse(scope.row)">{{ $t('delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -121,6 +122,17 @@ export default {
       } catch (err) {
         console.error('提交失败:', err)
         this.error = this.$t('fetch_error')
+      }
+    },
+    async deleteCourse(course) {
+      if (confirm(`${this.$t('confirm_delete')} ${course.title}?`)) {
+        try {
+          await axios.delete(`/api/courses/${course.course_code}/`)
+          this.fetchCourses()
+        } catch (err) {
+          console.error(err)
+          this.error = this.$t('fetch_error')
+        }
       }
     }
   }

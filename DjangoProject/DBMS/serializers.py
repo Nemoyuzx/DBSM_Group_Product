@@ -76,22 +76,79 @@ class StudentSerializer(serializers.ModelSerializer):
         return student
 
 class StaffSerializer(serializers.ModelSerializer):
-    # 修改source路径，使用person_id而不是staff_id
-    staff_name = serializers.CharField(source='person_id.legal_name', read_only=True)
+    # 使用person_id.legal_name，支持读写；设置为非必填
+    staff_name = serializers.CharField(source='person_id.legal_name', required=False)
     
     class Meta:
         model = Staff
         fields = '__all__'
+        extra_kwargs = {
+            'person_id': {'read_only': True}
+        }
+    
+    def update(self, instance, validated_data):
+        # 更新Staff自身字段
+        new_name = validated_data.pop('staff_name', None)
+        instance = super().update(instance, validated_data)
+        if new_name is not None:
+            person = instance.person_id
+            person.legal_name = new_name
+            person.save()
+        return instance
+    
+    def create(self, validated_data):
+        # 提取 staff_name 并移除重复的 person_id
+        new_name = validated_data.pop('staff_name', None)
+        validated_data.pop('person_id', None)
+        # 从 validated_data 获取 staff_id
+        staff_id = validated_data.get('staff_id')
+        # 获取或创建 Person
+        defaults = {
+            'legal_name': new_name or staff_id,
+            'preferred_name': new_name or staff_id,
+            'sex_at_birth': 'U',
+            'birth_date': datetime.date.today(),
+            'national_id': staff_id,
+            'phone_number': staff_id,
+            'email': f"{staff_id}@example.com"
+        }
+        person, created = Person.objects.get_or_create(person_id=staff_id, defaults=defaults)
+        if not created and new_name:
+            person.legal_name = new_name
+            person.save()
+        # 创建Staff并关联Person
+        staff = Staff.objects.create(person_id=person, **validated_data)
+        return staff
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = '__all__'
+        extra_kwargs = {
+            'dept_id': {'read_only': True}
+        }
+    def create(self, validated_data):
+        # 默认关联第一个 Institution
+        from .models import Institution
+        inst = Institution.objects.first()
+        if inst:
+            validated_data['inst_id'] = inst
+        # chair_staff_id 可选，默认 None
+        validated_data.setdefault('chair_staff_id', None)
+        return super().create(validated_data)
 
 class ProgramSerializer(serializers.ModelSerializer):
     class Meta:
         model = Program
         fields = '__all__'
+        extra_kwargs = {
+            'program_id': {'read_only': True}
+        }
+    def create(self, validated_data):
+        # 设置默认的credit_required和gpa_min_required
+        validated_data.setdefault('credit_required', 0)
+        validated_data.setdefault('gpa_min_required', Decimal('0.00'))
+        return super().create(validated_data)
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:

@@ -18,9 +18,10 @@
         <el-table-column prop="dept_id" :label="$t('id')" width="150" />
         <el-table-column prop="name" :label="$t('department_name')" />
         <el-table-column prop="office_location" label="Location" />
-        <el-table-column fixed="right" :label="$t('actions')" width="120">
+        <el-table-column fixed="right" :label="$t('actions')" width="240">
           <template #default="scope">
-            <el-button size="mini" @click="openDialog(scope.row)">Edit</el-button>
+            <el-button size="mini" @click="openDialog(scope.row)">{{ $t('edit') }}</el-button>
+            <el-button size="mini" type="danger" @click.stop="deleteDepartment(scope.row)">{{ $t('delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -101,7 +102,18 @@ export default {
         console.error('Failed to submit:', err)
         this.$message.error('Failed to submit department data.')
       }
-    }
+    },
+    async deleteDepartment(dept) {
+      if (confirm(`${this.$t('confirm_delete')} ${dept.name}?`)) {
+        try {
+          await axios.delete(`/api/departments/${dept.dept_id}/`)
+          this.fetchDepartments()
+        } catch (err) {
+          console.error(err)
+          this.$message.error(this.$t('fetch_error'))
+        }
+      }
+    },
   }
 }
 </script>

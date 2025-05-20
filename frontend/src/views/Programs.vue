@@ -12,9 +12,10 @@
         <el-table-column prop="program_id" :label="$t('id')" width="100" />
         <el-table-column prop="name" :label="$t('program_name')" />
         <el-table-column prop="degree_type" label="Degree" />
-        <el-table-column fixed="right" :label="$t('actions')" width="120">
+        <el-table-column fixed="right" :label="$t('actions')" width="240">
           <template #default="scope">
             <el-button size="small" @click="openEditDialog(scope.row)">{{ $t('edit') }}</el-button>
+            <el-button size="small" type="danger" @click.stop="deleteProgram(scope.row)">{{ $t('delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -89,7 +90,7 @@ export default {
       try {
         if (this.form.program_id) {
           // 编辑
-          await axios.put(`/api/programs/${this.form.program_id}/`, this.form)
+          await axios.patch(`/api/programs/${this.form.program_id}/`, this.form)
         } else {
           // 添加
           await axios.post('/api/programs/', this.form)
@@ -99,6 +100,17 @@ export default {
       } catch (err) {
         console.error(err)
         this.$message.error(this.$t('fetch_error'))
+      }
+    },
+    async deleteProgram(program) {
+      if (confirm(`${this.$t('confirm_delete')} ${program.name}?`)) {
+        try {
+          await axios.delete(`/api/programs/${program.program_id}/`)
+          this.fetchPrograms()
+        } catch (err) {
+          console.error(err)
+          this.$message.error(this.$t('fetch_error'))
+        }
       }
     }
   }
