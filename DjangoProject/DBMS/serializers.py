@@ -27,10 +27,12 @@ class PersonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class StudentSerializer(serializers.ModelSerializer):
-    # 嵌套 PersonSerializer，展示关联的 Person 信息
-    person = PersonSerializer(source='person_id', read_only=True)
-    # 前端无需提交 person_id，自动创建关联 Person
+    # 嵌套 PersonSerializer，展示并写入关联的 Person 信息
+    person = PersonSerializer(source='person_id')
+    # 支持前端扁平提交更新姓名
     student_name = serializers.CharField(source='person_id.legal_name', required=False)
+    # 嵌套 AddressSerializer，展示并写入关联的 Address
+    address = AddressSerializer(source='person_id.primary_address_id')
     class Meta:
         model = Student
         fields = '__all__'
@@ -51,28 +53,21 @@ class StudentSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self, validated_data):
-        # 提取嵌套的 person_id 数据，获取新提交的 legal_name
-        person_data = validated_data.pop('person_id', {}) or {}
-        new_name = person_data.get('legal_name')
-        # 设置 Student 必填字段默认值
-        validated_data.setdefault('expected_grad_term', '')
-        validated_data.setdefault('disability_flag', False)
+        # 提取嵌套的 Person (包含 address)
+        person_data = validated_data.pop('person', {}) or {}
+        address_data = validated_data.pop('address', {}) or {}
+        # 创建 Address
+        address = Address.objects.create(**address_data)
+        # 准备 Person 数据
+        person_data['primary_address_id'] = address
         # 从 validated_data 获取 student_id
         student_id = validated_data.get('student_id')
-        # 获取或创建 Person，避免重复主键错误
-        defaults = {
-            'legal_name': new_name or student_id,
-            'preferred_name': new_name or student_id,
-            'sex_at_birth': 'U',
-            'birth_date': datetime.date.today(),
-            'national_id': student_id,
-            'phone_number': student_id,
-            'email': f"{student_id}@example.com"
-        }
-        person, created = Person.objects.get_or_create(person_id=student_id, defaults=defaults)
-        if not created and new_name:
-            person.legal_name = new_name
-            person.save()
+        person_data.setdefault('person_id', student_id)
+        # 创建 Person
+        person = Person.objects.create(**person_data)
+        # 设置 Student 默认字段
+        validated_data.setdefault('expected_grad_term', '')
+        validated_data.setdefault('disability_flag', False)
         # 创建 Student 并关联 Person
         student = Student.objects.create(person_id=person, **validated_data)
         return student

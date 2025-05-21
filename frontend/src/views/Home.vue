@@ -52,7 +52,7 @@
 
     <!-- 快捷导航卡片 -->
     <el-row :gutter="20" class="mt-20">
-      <el-col :span="8">
+      <el-col :span="8" class="mt-10-mb-10">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -63,7 +63,7 @@
           <div>{{ $t('dept_desc') }}</div>
         </el-card>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="8" class="mt-10-mb-10">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -74,7 +74,7 @@
           <div>{{ $t('prog_desc') }}</div>
         </el-card>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="8" class="mt-10-mb-10">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -83,6 +83,28 @@
             </div>
           </template>
           <div>{{ $t('course_desc') }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="8" class="mt-10-mb-10">
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('students') }}</span>
+              <el-button class="button" text @click="$router.push('/students')">{{ $t('view') }}</el-button>
+            </div>
+          </template>
+          <div>{{ $t('student_desc') }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="8" class="mt-10-mb-10">
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('staffs') }}</span>
+              <el-button class="button" text @click="$router.push('/staffs')">{{ $t('view') }}</el-button>
+            </div>
+          </template>
+          <div>{{ $t('staff_desc') }}</div>
         </el-card>
       </el-col>
     </el-row>
@@ -167,6 +189,10 @@ export default {
 }
 .mt-20 {
   margin-top: 20px;
+}
+.mt-10-mb-10 {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .card-header {
   display: flex;

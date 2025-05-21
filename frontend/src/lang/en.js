@@ -13,6 +13,8 @@ export default {
     dept_desc: 'Manage department data of the school',
     prog_desc: 'Manage program information of the school',
     course_desc: 'Manage course details of the school',
+    student_desc: 'Manage student data of the school',
+    staff_desc: 'Manage staff data of the school',
     fetch_error: 'Failed to fetch data. Please try again later.',
     id: 'ID',
     person_id: 'ID Number',
@@ -61,6 +63,12 @@ export default {
     capacity: 'Capacity',
     waitlist: 'Waitlist',
     no_data: 'No data available',
+    address_line1: 'Address Line 1',
+    address_line2: 'Address Line 2',
+    city: 'City',
+    province: 'Province',
+    postal_code: 'Postal Code',
+    country: 'Country',
 
     // 分类标题翻译
     category_人员与地址: 'People & Address',

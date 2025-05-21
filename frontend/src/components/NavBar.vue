@@ -10,6 +10,7 @@
     <el-menu
         mode="horizontal"
         :router="true"
+        :default-active="activeIndex"
         background-color="transparent"
         text-color="#fff"
         active-text-color="#ffd04b"
@@ -33,18 +34,21 @@
 
 <script>
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
   name: 'NavBar',
   setup() {
     const { locale } = useI18n()
-    const switchLang = (lang) => {
-      locale.value = lang
-    }
-    return {
-      currentLang: locale,
-      switchLang
-    }
+    const switchLang = (lang) => { locale.value = lang }
+    const route = useRoute()
+    // activeIndex based on base path (e.g., '/students' for '/students/1')
+    const activeIndex = computed(() => {
+      const segs = route.path.split('/')
+      return segs.length > 1 && segs[1] ? '/' + segs[1] : route.path
+    })
+    return { currentLang: locale, switchLang, activeIndex }
   }
 }
 </script>

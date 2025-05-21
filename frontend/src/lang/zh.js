@@ -13,6 +13,8 @@ export default {
     dept_desc: '管理学校的院系数据',
     prog_desc: '管理学校的项目与学位',
     course_desc: '管理学校开设的课程信息',
+    student_desc: '管理学校的学生数据',
+    staff_desc: '管理学校的教职工数据',
     fetch_error: '获取数据失败，请稍后再试。',
     id: '编号',
     person_id: '身份证号',
@@ -61,6 +63,12 @@ export default {
     capacity: '容量',
     waitlist: '候补',
     no_data: '暂无数据',
+    address_line1: '地址行1',
+    address_line2: '地址行2',
+    city: '城市',
+    province: '省份',
+    postal_code: '邮政编码',
+    country: '国家',
 
     // 分类标题翻译
     category_人员与地址: '人员与地址',

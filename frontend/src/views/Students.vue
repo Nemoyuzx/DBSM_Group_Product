@@ -65,6 +65,28 @@
         <el-form-item label="Disability">
           <el-switch v-model="form.disability_flag" active-text="Yes" inactive-text="No" />
         </el-form-item>
+        <!-- Address fields for new student -->
+        <template v-if="!editingStudent">
+          <el-divider>{{ $t('person_address') }}</el-divider>
+          <el-form-item :label="$t('address_line1')">
+            <el-input v-model="form.address_line1" />
+          </el-form-item>
+          <el-form-item :label="$t('address_line2')">
+            <el-input v-model="form.address_line2" />
+          </el-form-item>
+          <el-form-item :label="$t('city')">
+            <el-input v-model="form.city" />
+          </el-form-item>
+          <el-form-item :label="$t('province')">
+            <el-input v-model="form.province" />
+          </el-form-item>
+          <el-form-item :label="$t('postal_code')">
+            <el-input v-model="form.postal_code" />
+          </el-form-item>
+          <el-form-item :label="$t('country')">
+            <el-input v-model="form.country" />
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -93,7 +115,13 @@ export default {
         admission_year: '',
         enrollment_status: '',
         expected_grad_term: '',
-        disability_flag: false
+        disability_flag: false,
+        address_line1: '',
+        address_line2: '',
+        city: '',
+        province: '',
+        postal_code: '',
+        country: ''
       }
     }
   },
@@ -136,7 +164,13 @@ export default {
           admission_year: '',
           enrollment_status: '',
           expected_grad_term: '',
-          disability_flag: false
+          disability_flag: false,
+          address_line1: '',
+          address_line2: '',
+          city: '',
+          province: '',
+          postal_code: '',
+          country: ''
         }
       }
       this.dialogVisible = true
@@ -146,8 +180,23 @@ export default {
         if (this.editingStudent) {
           await axios.patch(`/api/students/${this.editingStudent.student_id}/`, this.form)
         } else {
-          // 将 student_name 嵌套为 person_id.legal_name
-          const payload = { ...this.form, person_id: { legal_name: this.form.student_name } }
+          // Build nested person and address payload for creation
+          const payload = {
+            student_id: this.form.student_id,
+            admission_year: this.form.admission_year,
+            enrollment_status: this.form.enrollment_status,
+            expected_grad_term: this.form.expected_grad_term,
+            disability_flag: this.form.disability_flag,
+            person: { legal_name: this.form.student_name },
+            address: {
+              line1: this.form.address_line1,
+              line2: this.form.address_line2,
+              city: this.form.city,
+              province: this.form.province,
+              postal_code: this.form.postal_code,
+              country: this.form.country
+            }
+          }
           await axios.post('/api/students/', payload)
         }
         this.dialogVisible = false
