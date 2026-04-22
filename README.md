@@ -97,3 +97,7 @@ npm run serve
 
 - 仅后端说明见 `DjangoProject/README.md`
 - 仅前端说明见 `frontend/README.md`
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
