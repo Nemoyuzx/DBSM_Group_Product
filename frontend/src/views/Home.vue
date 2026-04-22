@@ -6,7 +6,7 @@
           <h1>{{ $t('welcome') }}</h1>
           <p>{{ $t('description') }}</p>
           <div class="contact">
-            Group19 · Rui ❤️‍🔥：<a href="mailto:jp2023213616@qmul.ac.uk">jp2023213616@qmul.ac.uk</a>
+            Academic database management demo with public-safe configuration and documentation.
           </div>
         </el-card>
       </el-col>

@@ -1,102 +1,81 @@
-> [!WARNING]
->
-> 建议阅读完以下内容后操作
+# Django Backend
 
+本目录包含 Django 后端项目、模型定义和 REST API 路由。
 
+## Requirements
 
-### 使用介绍
+- Python 3.12
+- MySQL 8.x
+- 建议使用 conda 环境 `DjangoDBMS`
 
-1、IDE 工具切换到正确环境 （我用的python3.12的conda环境）
+## Setup
 
-2、conda/python 环境中执行库安装 
-
-```cmd
+```bash
+conda activate DjangoDBMS
 pip install -r requirements.txt
+cp .env.example .env
 ```
 
-3、更改`config/setting.py`文件
+然后根据你的本地 MySQL 配置编辑 `.env`。
 
-```python
-DATABASES = {
-    'default': {
-    'ENGINE': 'django.db.backends.mysql',
-    'NAME':'DBMS_show', #自己的schema尽量和这个一样
-    'USER': 'root', #改为自己的数据库连接用户名
-    'PASSWORD': 'Love5nemo', #改为自己的数据库连接密码
-    'HOST': '127.0.0.1', 
-    'PORT': '3306', #改为自己的数据库连接端口
-    }
-}
+## Environment Variables
+
+`settings.py` 会自动读取当前目录下的 `.env` 文件。可配置项如下：
+
+```env
+DJANGO_SECRET_KEY=replace-with-a-strong-secret-key
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
+DJANGO_CORS_ALLOW_ALL_ORIGINS=True
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=DBMS_show
+DB_USER=root
+DB_PASSWORD=replace-with-your-db-password
+DB_HOST=127.0.0.1
+DB_PORT=3306
 ```
 
-4、迁移数据库（如果之前数据库有表需要删除）在 `manager.py` 文件上
+## Run
 
-```cmd
+```bash
 python manage.py migrate
-```
-
-5、运行服务 默认端口在本地8000  在 `manager.py` 文件上
-
-```
 python manage.py runserver
 ```
 
+默认服务地址：`http://127.0.0.1:8000`
 
+## API Overview
 
-### 运行建议
+项目通过 `DefaultRouter` 暴露多个资源，常用入口包括：
 
-使用介绍3和4的执行 建议先在vscode的 `manager.py` 中点击右上执行，会出现类似下面内容
+- `/api/students/`
+- `/api/staffs/`
+- `/api/courses/`
+- `/api/departments/`
+- `/api/programs/`
+- `/api/persons/`
+- `/api/table-counts/`
+- `/api/table-data/<table_name>/`
+- `/api/debug-info/`
 
-```cmd
-(DjangoDBMS) (base) nemoyu@Nemos-MacBook-Pro DBSM_Group_Product % /opt/anaconda3/envs/DjangoDBMS/bin/python /Users/n
-emoyu/Desktop/database-数据库系统/小组作业/DBSM_Group_Product/DjangoProject/manage.py
+## Troubleshooting
 
-Type 'manage.py help <subcommand>' for help on a specific subcommand.
+### `mysqlclient` 安装失败
 
-Available subcommands:
+在 macOS 上如果看到 `pkg-config` 或 MySQL 头文件相关错误，可以先安装依赖：
 
-[auth]
-    changepassword
-    createsuperuser
-
-[contenttypes]
-
-...
-
-[sessions]
-    clearsessions
-
-[staticfiles]
-    collectstatic
-    findstatic
-    runserver
+```bash
+brew install mysql mysql-connector-c openssl pkg-config
 ```
 
-接着在弹出的终端中按向上键恢复上一个指令，再在这条指令后添加 `migrate` 、`runserver` 语句，此操作更快速且避免不同环境和相对或绝对路径产生的报错
+然后重新执行：
 
+```bash
+pip install -r requirements.txt
+```
 
+### 数据库连接失败
 
-### 问题解决
-
-- 如果mac使用pip安装有下面报错
-
-  ```cmd
-  Exception: Can not find valid pkg-config name.
-        Specify MYSQLCLIENT_CFLAGS and MYSQLCLIENT_LDFLAGS env vars manually
-        [end of output]
-    
-    note: This error originates from a subprocess, and is likely not a problem with pip.
-  error: subprocess-exited-with-error
-  
-  × Getting requirements to build wheel did not run successfully.
-  │ exit code: 1
-  ╰─> See above for output.
-  ```
-
-  先执行（假设你装了brew）
-
-  ```cmd
-  brew install mysql mysql-connector-c openssl pkg-config
-  ```
-
-  再尝试继续执行 pip install 命令
+- 确认 MySQL 服务正在运行
+- 确认 `.env` 中的数据库名、用户、密码和端口正确
+- 确认目标数据库已经创建
